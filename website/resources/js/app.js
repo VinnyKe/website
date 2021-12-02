@@ -3,32 +3,30 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
- import Vue from 'vue/dist/vue'
 
- require('./bootstrap');
- window.Vue = require('vue');
+require('./bootstrap');
 
- import VueAxios from 'vue-axios';
- import VueRouter from 'vue-router';
- import axios from 'axios';
+window.Vue = require('vue').default;
 
- import Questionnaires from './components/Questionnaires.vue'
- import Navbar from './components/Navbar.vue'
- import Vuetify from 'vuetify/lib';
+/**
+ * The following block of code may be used to automatically register your
+ * Vue components. It will recursively scan this directory for the Vue
+ * components and automatically register them with their "basename".
+ *
+ * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ */
 
- /**
-  * Next, we will create a fresh Vue application instance and attach it to
-  * the page. Then, you may begin adding components to this application
-  * or customize the JavaScript scaffolding to fit your unique needs.
-  */
+// const files = require.context('./', true, /\.vue$/i)
+// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
- Vue.use(VueRouter);
- Vue.use(VueAxios, axios);
+Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
 
-Vue.component('questionnaires', Questionnaires);
-Vue.component('navbar', Navbar);
-
- const app = new Vue({
-     el: '#app'
- });
+const app = new Vue({
+    el: '#app',
+});
