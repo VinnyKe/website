@@ -5364,55 +5364,60 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  mounted: function mounted() {},
-  created: function created() {
+  /**
+   * TODO
+   *  - get answers with slectedAnswers object then add them to userAnswers when saved (no logic with userAnswers)
+   */
+  mounted: function mounted() {
     var _this = this;
 
     axios.get('api/get-questionnaire').then(function (response) {
       _this.questions = response.data;
       _this.isFetching = false;
-      _this.currentQuestion = _this.questions[19];
     });
   },
+  created: function created() {},
   props: {},
   data: function data() {
     return {
       //VARIABLES
       isFetching: true,
       questions: {},
-      currentQuestion: {},
-      userAnswers: {}
+      userAnswers: {},
+      selectedAnswers: [],
+      currentIndex: 18
     };
   },
   computed: {
-    isSelectedAnswer: function isSelectedAnswer(answerId) {
-      return !!this.userAnswers[this.currentQuestion.id] ? this.userAnswers[this.currentQuestion.id].includes(answerId) : null;
+    currentQuestion: function currentQuestion() {
+      return this.questions[this.currentIndex];
     }
   },
   methods: {
+    answerIsSelected: function answerIsSelected(answerId) {
+      return this.selectedAnswers.includes(answerId);
+    },
     answerClicked: function answerClicked(answerId) {
-      if (!!this.userAnswers[this.currentQuestion.id]) {
-        // If array of user answers exists
-        if (!this.userAnswers[this.currentQuestion.id].includes(answerId)) {
-          // If answer is not selected add it to user answers array
-          this.userAnswers[this.currentQuestion.id].push(answerId);
-        } else {
-          // Else remove it from the array
-          this.removeAnswer(answerId);
+      console.log('Handling ' + answerId);
 
-          if (this.userAnswers[this.currentQuestion.id].length == 0) {
-            // If current question has no user answers, delete the answers object (keep things clean)
-            delete this.userAnswers[this.currentQuestion.id];
-          }
-        }
+      if (!this.selectedAnswers.includes(answerId)) {
+        this.selectedAnswers.push(answerId);
       } else {
-        // If array of user answers does not exist
-        this.userAnswers[this.currentQuestion.id] = [answerId];
+        this.removeFromArray(this.selectedAnswers, answerId);
       }
     },
-    removeAnswer: function removeAnswer(answerId) {
-      this.removeFromArray(this.userAnswers[this.currentQuestion.id], answerId);
+    saveAnswers: function saveAnswers() {
+      this.userAnswers[this.currentQuestion.id] = this.selectedAnswers;
     },
     removeFromArray: function removeFromArray(array, element) {
       var index = array.indexOf(element);
@@ -5420,7 +5425,16 @@ __webpack_require__.r(__webpack_exports__);
       if (index > -1) {
         array.splice(index, 1);
       }
-    }
+    },
+    nextQuestion: function nextQuestion() {
+      if (this.currentQuestion.id == this.questions[this.questions.length - 1].id) {
+        this.endQuestionnaire();
+      } else {
+        this.saveAnswers();
+        this.currentIndex++;
+      }
+    },
+    endQuestionnaire: function endQuestionnaire() {}
   }
 });
 
@@ -11044,7 +11058,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".questionnaire-wrapper[data-v-4844c070] {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: center;\n  margin: 20px 0;\n}\n.image[data-v-4844c070] {\n  margin-bottom: 20px;\n  width: auto;\n  height: 600px;\n}\n.question[data-v-4844c070] {\n  text-align: center;\n}\n.answers-wrapper[data-v-4844c070] {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n  margin: 20px 0;\n}\n.answer[data-v-4844c070] {\n  flex-basis: calc(50% - 30px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  align-self: center;\n  text-align: center;\n  max-width: 800px;\n  min-width: 400px;\n  margin: 10px;\n  padding: 0 10px;\n  font-size: 25px;\n  border-radius: 20px;\n  border: 3px solid transparent;\n  background-color: lightskyblue;\n}\n.answer[data-v-4844c070]:hover {\n  background-color: #05b9fc;\n  cursor: pointer;\n}\n.selected-answer[data-v-4844c070] {\n  background-color: #039ed6;\n}\n.myvars[data-v-4844c070] {\n  color: #c9f1ff;\n  color: #05b9fc;\n  color: #fadd06;\n  color: #c9f1ff;\n  color: #039ed6;\n  color: #fadd06;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".questionnaire-wrapper[data-v-4844c070] {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: center;\n  margin: 20px 0;\n}\n.image[data-v-4844c070] {\n  margin-bottom: 20px;\n  width: auto;\n  height: 600px;\n}\n.question[data-v-4844c070] {\n  text-align: center;\n}\n.answers-wrapper[data-v-4844c070] {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n  margin: 20px 0;\n}\n.answer[data-v-4844c070] {\n  flex-basis: calc(50% - 30px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  align-self: center;\n  text-align: center;\n  max-width: 800px;\n  min-width: 400px;\n  margin: 10px;\n  padding: 0 10px;\n  font-size: 25px;\n  border-radius: 20px;\n  border: 3px solid transparent;\n  background-color: lightskyblue;\n}\n.answer[data-v-4844c070]:hover {\n  background-color: #5abaf7;\n  cursor: pointer;\n}\n.selected-answer[data-v-4844c070], .selected-answer[data-v-4844c070]:hover {\n  background-color: #e9cf0e;\n}\n.myvars[data-v-4844c070] {\n  color: #c9f1ff;\n  color: #05b9fc;\n  color: #fadd06;\n  color: #c9f1ff;\n  color: #039ed6;\n  color: #e9cf0e;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -29685,56 +29699,70 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "questionnaire-wrapper" }, [
-    !!_vm.currentQuestion.media
-      ? _c("img", {
-          staticClass: "image",
-          attrs: { src: this.currentQuestion.media[0].original_url },
-        })
-      : _vm._e(),
-    _vm._v(" "),
-    _c("h3", { staticClass: "question" }, [
-      _vm._v("\n        " + _vm._s(_vm.currentQuestion.text) + "\n    "),
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "answers-wrapper" },
-      _vm._l(_vm.currentQuestion.answers, function (answer) {
-        return _c(
+  return !_vm.isFetching
+    ? _c("div", { staticClass: "questionnaire-wrapper" }, [
+        _vm.currentQuestion.media.length > 0
+          ? _c("img", {
+              staticClass: "image",
+              attrs: { src: this.currentQuestion.media[0].original_url },
+            })
+          : _vm._e(),
+        _vm._v(" "),
+        _c("h3", { staticClass: "question" }, [
+          _vm._v("\n        " + _vm._s(_vm.currentQuestion.text) + "\n    "),
+        ]),
+        _vm._v(" "),
+        !!_vm.selectedAnswers
+          ? _c(
+              "div",
+              { staticClass: "answers-wrapper" },
+              _vm._l(_vm.currentQuestion.answers, function (answer) {
+                return _c(
+                  "div",
+                  {
+                    key: answer.id,
+                    class: [
+                      _vm.answerIsSelected(answer.id) ? "selected-answer" : "",
+                      "answer",
+                    ],
+                    on: {
+                      click: function ($event) {
+                        return _vm.answerClicked(answer.id)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v(
+                      "\n            " + _vm._s(answer.text) + "\n            "
+                    ),
+                  ]
+                )
+              }),
+              0
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _c(
           "div",
           {
-            key: answer.id,
-            class: [
-              !!_vm.userAnswers[_vm.currentQuestion.id]
-                ? "selected-answer"
-                : "",
-              "answer",
-            ],
-            on: {
-              click: function ($event) {
-                return _vm.answerClicked(answer.id)
-              },
-            },
+            staticClass: "button validate-button",
+            on: { click: _vm.nextQuestion },
           },
-          [_vm._v("\n            " + _vm._s(answer.text) + "\n            ")]
-        )
-      }),
-      0
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "button validate-button" }, [
-      _vm._v(
-        "\n        " +
-          _vm._s(
-            _vm.currentQuestion.id == _vm.questions[_vm.questions.length - 1].id
-              ? "Terminer"
-              : "Suivant"
-          ) +
-          "\n    "
-      ),
-    ]),
-  ])
+          [
+            _vm._v(
+              "\n        " +
+                _vm._s(
+                  _vm.currentQuestion.id ==
+                    _vm.questions[_vm.questions.length - 1].id
+                    ? "Terminer"
+                    : "Suivant"
+                ) +
+                "\n    "
+            ),
+          ]
+        ),
+      ])
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true

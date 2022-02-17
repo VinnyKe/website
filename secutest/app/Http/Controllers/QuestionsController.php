@@ -92,8 +92,8 @@ class QuestionsController extends Controller
 
     public function getQuestionnaire() {
         return Question::with('answers')
-            ->with('media')
             ->has('media')
+            ->with('media')
             ->inRandomOrder()
             ->limit(20)
             ->get();

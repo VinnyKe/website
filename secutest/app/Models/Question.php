@@ -21,6 +21,12 @@ class Question extends Model implements HasMedia
             ->format(Manipulations::FORMAT_WEBP);
     }
 
+    public function convertedMedia()
+    {
+        $media = $this->getMedia();
+        return (!!$media && $media->hasGeneratedConversion('converted')) ? $media->getUrl('converted') : null;
+    }
+
     public function answers()
     {
         return $this->hasMany(Answer::class);

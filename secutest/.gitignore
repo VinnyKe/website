@@ -1,9 +1,7 @@
 /app/Imports/files
 /app/Imports/images
 /node_modules
-/public/hot
-/public/storage
-/public/media
+/public
 /storage/*.key
 /vendor
 .env
