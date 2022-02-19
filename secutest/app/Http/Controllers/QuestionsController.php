@@ -92,13 +92,18 @@ class QuestionsController extends Controller
 
     public function getQuestionnaire() {
         return Question::with('answers')
-            ->has('media')
+            // ->has('media')
             ->with('media')
             ->inRandomOrder()
             ->limit(20)
             ->get();
     }
 
+    public function submitQuestionnaire(Request $request)
+    {
+        $res = 'success';
+        return $res;
+    }
     public function importQuestions() {
         $this->resetQuestions();
         Excel::import(new QuestionsImport, app_path().'/Imports/files/Questions - v6.xlsx');

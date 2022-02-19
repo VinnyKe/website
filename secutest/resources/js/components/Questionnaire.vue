@@ -1,38 +1,47 @@
 <template>
-    <div class="questionnaire-wrapper" v-if="!isFetching">
-        <img class="image"
-            v-if="currentQuestion.media.length > 0"
-            :src="this.currentQuestion.media[0].original_url"
-        >
-        <h3 class="question">
-            {{ currentQuestion.text }}
-        </h3>
-        <div
-            class="answers-wrapper"
-            v-if="!!selectedAnswers"
-        >
-            <div
-                v-for="answer in currentQuestion.answers"
-                :key="answer.id"
-                :class="[
-                    answerIsSelected(answer.id) ? 'selected-answer' : '',
-                    'answer',
-                ]"
-                @click="answerClicked(answer.id)"
+    <div>
+        <QuestionnaireWelcome
+            v-if="start"
+            @startQuestionnaire="startQuestionnaire()"
+        />
+        <div class="questionnaire-wrapper" v-if="!isFetching && !start && !end">
+            <img class="image"
+                v-if="currentQuestion.media.length > 0"
+                :src="this.currentQuestion.media[0].original_url"
             >
-                {{ answer.text}}
-                </div>
-        </div>
-        <div
-            class="button validate-button"
-            @click="nextQuestion"
-        >
-            {{ (currentQuestion.id == questions[questions.length-1].id) ? 'Terminer' :  'Suivant' }}
+            <h3 class="question">
+                {{ currentQuestion.text }}
+            </h3>
+            <div
+                class="answers-wrapper"
+                v-if="!!selectedAnswers"
+            >
+                <div
+                    v-for="answer in currentQuestion.answers"
+                    :key="answer.id"
+                    :class="[
+                        answerIsSelected(answer.id) ? 'selected-answer' : '',
+                        'answer',
+                    ]"
+                    @click="answerClicked(answer.id)"
+                >
+                    {{ answer.text}}
+                    </div>
+            </div>
+            <div
+                class="button validate-button"
+                @click="nextQuestion"
+            >
+                {{ (currentQuestion.id == questions[questions.length-1].id) ? 'Terminer' :  'Suivant' }}
+            </div>
         </div>
     </div>
 </template>
 
-<script>export default {
+<script>
+import QuestionnaireWelcome from './QuestionnaireWelcome.vue';
+export default {
+    components: { QuestionnaireWelcome },
     /**
      * TODO
      *  - get answers with slectedAnswers object then add them to userAnswers when saved (no logic with userAnswers)
@@ -41,6 +50,21 @@
         axios.get('api/get-questionnaire').then((response) => {
             this.questions = response.data;
             this.isFetching = false;
+
+            // TESTING
+            if (this.testing) {
+                this.currentIndex = 19;
+                this.questions.forEach(element => {
+                    this.userAnswers[element.id] = {};
+                    this.userAnswers[element.id].answers = [];
+                    this.userAnswers[element.id].answers.push(element.answers[0].id);
+                    this.userAnswers[element.id].isCorrect = false;
+
+                    if (this.questions[this.currentIndex].id == element.id) {
+                        this.selectedAnswers.push(element.answers[0].id);
+                    }
+                });
+            }
         });
     },
     created() {
@@ -51,12 +75,18 @@
 
     data() {
         return {
+            // DEBUG
+            testing: false,
+
             //VARIABLES
+            start: true,
+            end: false,
             isFetching: true,
             questions: {},
             userAnswers: {},
             selectedAnswers: [],
-            currentIndex: 18,
+            currentIndex: 0,
+            score: 0,
         }
     },
 
@@ -71,7 +101,6 @@
             return this.selectedAnswers.includes(answerId);
         },
         answerClicked(answerId) {
-            console.log('Handling '+answerId);
             if (!this.selectedAnswers.includes(answerId)) {
                 this.selectedAnswers.push(answerId);
             } else {
@@ -79,7 +108,19 @@
             }
         },
         saveAnswers() {
-            this.userAnswers[this.currentQuestion.id] = this.selectedAnswers;
+            this.userAnswers[this.currentQuestion.id] = {};
+            this.userAnswers[this.currentQuestion.id].isCorrect = true;
+            this.userAnswers[this.currentQuestion.id].answers = this.selectedAnswers;
+
+            // Check if question answered correctly
+            for (const questionAnswer of this.currentQuestion.answers) {
+                if (this.selectedAnswers.includes(questionAnswer.id)) {
+                    if (!questionAnswer.isCorrect) {
+                        this.userAnswers[this.currentQuestion.id].isCorrect = false;
+                        break;
+                    }
+                }
+            }
         },
         removeFromArray(array, element) {
             var index = array.indexOf(element);
@@ -88,15 +129,25 @@
             }
         },
         nextQuestion() {
+            // Save selected answers
+            this.saveAnswers();
+
+            // Check if we are on last question
             if (this.currentQuestion.id == this.questions[this.questions.length-1].id) {
+                // If so, end the questionnaire
                 this.endQuestionnaire();
             } else {
-                this.saveAnswers();
+                // Else go to next question
                 this.currentIndex++;
             }
+            this.selectedAnswers = [];
+        },
+        startQuestionnaire() {
+            console.log('Starting from Questionnaire');
+            this.start = false;
         },
         endQuestionnaire() {
-
+            this.end = true;
         },
     },
 }

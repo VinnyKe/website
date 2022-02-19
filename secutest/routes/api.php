@@ -19,7 +19,11 @@ Route::resources([
     'questions' => QuestionsController::class,
 ]);
 
+// Questionnaire management
 Route::get('/questions/{question}/image', [QuestionsController::class,'showImage']);
 Route::get('/get-questionnaire', [QuestionsController::class,'getQuestionnaire']);
+Route::post('/submit-questionnaire', [QuestionsController::class,'submitQuestionnaire']);
+
+// DB management
 Route::post('/questions/import', [QuestionsController::class, 'importQuestions']);
 Route::post('/questions/reset', [QuestionsController::class, 'resetQuestions']);
